@@ -1223,9 +1223,18 @@ def economic_analysis_page():
     max_servers = st.sidebar.slider("Max Servers to Evaluate", 1, 20, 10, 1)
     
     st.subheader("Calculation Logic")
-    st.markdown(r"""
-    For each number of servers `c` from 1 to {max_servers}:
+
+    # ===================================================================
+    # START OF BUG FIX
+    # ===================================================================
     
+    # Use an f-string for the line with the variable
+    st.markdown(f"""
+    For each number of servers `c` from 1 to {max_servers}:
+    """)
+    
+    # Use a separate, raw string for the LaTeX part
+    st.markdown(r"""
     1.  **Calculate M/M/c theoretical metrics:**
         - $L_q$: Average number of customers in the queue.
         - $W_q$: Average time a customer waits in the queue.
@@ -1238,8 +1247,12 @@ def economic_analysis_page():
     *(Note: This analysis uses $W_q$ (time in queue). You could also
     use $W$ (time in system) depending on whether the customer's cost
     is incurred only while waiting or for their entire visit.)*
-    """.format(max_servers=max_servers))
+    """)
     
+    # ===================================================================
+    # END OF BUG FIX
+    # ===================================================================
+
     if st.button("Calculate Optimal Configuration"):
         results = []
         
@@ -1392,7 +1405,7 @@ def add_to_navigation():
     
     PAGES = {
         "Guide & Glossary": guide_and_glossary_page,
-        "Stochastic Processes & Queueing": stochastic_queueing_page,
+        "Stochastic Processes & Queueing": stochastic_queueing_row,
         "Economic Analysis (Queues)": economic_analysis_page,
         ... other pages ...
     }
@@ -1416,4 +1429,19 @@ if __name__ == "__main__":
     
     st.sidebar.title('Navigation')
     choice = st.sidebar.radio("Go to", list(PAGES.keys()))
+    
+    # Clear session state if the page choice changes
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = choice
+    
+    if st.session_state.current_page != choice:
+        st.session_state.current_page = choice
+        # Clear calculation results when switching pages
+        if 'comparison_df' in st.session_state:
+            del st.session_state.comparison_df
+        if 'markov_result' in st.session_state:
+            del st.session_state.markov_result
+        if 'economic_results_df' in st.session_state:
+            del st.session_state.economic_results_df
+            
     PAGES[choice]()
