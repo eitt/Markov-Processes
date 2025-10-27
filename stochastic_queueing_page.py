@@ -1222,35 +1222,51 @@ def economic_analysis_page():
     
     max_servers = st.sidebar.slider("Max Servers to Evaluate", 1, 20, 10, 1)
     
-    st.subheader("Calculation Logic")
+    # ===================================================================
+    # START OF IMPROVED EXPLANATION
+    # ===================================================================
 
-    # ===================================================================
-    # START OF BUG FIX
-    # ===================================================================
+    st.subheader("How the Calculation Works")
     
-    # Use an f-string for the line with the variable
     st.markdown(f"""
-    For each number of servers `c` from 1 to {max_servers}:
+    The tool finds the optimum by simulating the total cost for every
+    server configuration, from `c = 1` to `c = {max_servers}`.
+    
+    For each number of servers `c`, it performs the following steps:
     """)
     
-    # Use a separate, raw string for the LaTeX part
     st.markdown(r"""
-    1.  **Calculate M/M/c theoretical metrics:**
-        - $L_q$: Average number of customers in the queue.
-        - $W_q$: Average time a customer waits in the queue.
+    **1. Calculate System Performance (M/M/c Formulas)**
+    - First, it calculates the **system utilization ($\rho$)** to see if the
+      system is stable: $\rho = \lambda / (c \times \mu)$.
+    - If $\rho \ge 1$, the system is unstable and costs are infinite.
+    - If $\rho < 1$ (stable), it calculates the **average customer wait time ($W_q$)**
+      using the M/M/c theoretical formulas.
     
-    2.  **Calculate Daily Costs:**
-        - $Server Cost = (\text{Cost per Server}) \times (\text{Hours}) \times c$
-        - $Waiting Cost = (\text{Arrival Rate } \lambda) \times (\text{Hours}) \times (\text{Avg Wait } W_q) \times (\text{Wait Cost})$
-        - $Total Cost = Server Cost + Waiting Cost$
+    **2. Calculate the Two Opposing Costs (per Day)**
     
-    *(Note: This analysis uses $W_q$ (time in queue). You could also
-    use $W$ (time in system) depending on whether the customer's cost
-    is incurred only while waiting or for their entire visit.)*
+    - **A. Daily Server Cost (Rises with `c`)**
+        - This is the direct cost of staffing. It's a simple linear
+          increase.
+        - $Server Cost = (\text{Cost per Server}) \times (\text{Hours per Day}) \times c$
+    
+    - **B. Daily Waiting Cost (Falls with `c`)**
+        - This is the "hidden" cost of poor service. As `c` increases,
+          $W_q$ (wait time) drops dramatically, and so does this cost.
+        - $Waiting Cost = (\text{Total Daily Arrivals}) \times (\text{Avg. Wait Time } W_q) \times (\text{Cost per Wait Hour})$
+        - Where: $Total Daily Arrivals = \lambda \times (\text{Hours per Day})$
+    
+    **3. Find the Minimum Total Cost**
+    - $Total Cost = (\text{Daily Server Cost}) + (\text{Daily Waiting Cost})$
+    - The tool calculates this total cost for `c=1`, `c=2`, `c=3`, etc.,
+      and presents them in the table.
+    - The **optimal configuration** is the value of `c` that has the
+      **lowest Total Daily Cost**. This is the "sweet spot" where you are
+      spending just enough on servers to minimize customer waiting costs.
     """)
     
     # ===================================================================
-    # END OF BUG FIX
+    # END OF IMPROVED EXPLANATION
     # ===================================================================
 
     if st.button("Calculate Optimal Configuration"):
@@ -1405,7 +1421,7 @@ def add_to_navigation():
     
     PAGES = {
         "Guide & Glossary": guide_and_glossary_page,
-        "Stochastic Processes & Queueing": stochastic_queueing_row,
+        "Stochastic Processes & Queueing": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
         ... other pages ...
     }
