@@ -1445,6 +1445,94 @@ def economic_analysis_page():
 
 
 # ========================================
+# NEW PAGE: GRADED ACTIVITY
+# ========================================
+
+def graded_activity_page():
+    st.title("Grade 1: Economic Optimization from Observed Data")
+    st.markdown("Use the application's tools to find the most cost-effective number of servers based on real-world observed data.")
+    
+    st.header("Scenario: University Coffee Shop Line")
+    
+    st.markdown("""
+    A university coffee shop tracked customer flow for **1 hour (60 minutes)** during the morning rush. The data below shows the arrival and service times (in minutes) for 12 customers.
+    
+    Your task is to:
+    1. **Calculate Rates (λ and μ)** using the **Upload Queue Data** tool.
+    2. **Determine Optimal Servers** using the **Economic Analysis** tool with given costs.
+    3. **Download** the required results.
+    """)
+    
+    # ----------------------------------------
+    # STEP 1: Data Acquisition and Rate Calculation
+    # ----------------------------------------
+    st.subheader("Step 1: Calculate Arrival (λ) and Service (μ) Rates")
+    
+    st.markdown("""
+    Use the data provided in the template below.
+    - **Time Unit:** Minutes. Rates will be calculated as **customers/minute** by the tool.
+    - You must convert the tool's output to **customers/hour** (x 60) for use in the Economic Analysis tool.
+    """)
+    
+    # Generate and display template
+    data_template = generate_graded_template()
+    st.dataframe(data_template)
+    
+    # Download button for the data
+    st.download_button(
+        "📥 Download Activity Data CSV",
+        data=data_template.to_csv(index=False),
+        file_name="graded_activity_data.csv",
+        mime="text/csv"
+    )
+    
+    st.info("""
+    **Action:**
+    1. Download the `graded_activity_data.csv`.
+    2. Go to the **Upload Queue Data** page.
+    3. Upload the downloaded CSV.
+    4. Note the calculated **Arrival Rate (λ)** and **Service Rate (μ)** in **customers/minute**.
+    """)
+    
+    # ----------------------------------------
+    # STEP 2: Economic Optimization
+    # ----------------------------------------
+    st.subheader("Step 2: Find the Optimal Configuration")
+    
+    st.markdown("""
+    Use the following economic parameters for the coffee shop:
+    """)
+    
+    cost_data = pd.DataFrame({
+        'Parameter': ['Cost per Server per Hour ($)', 'Customer Wait Cost per Hour ($)', 'Operating Hours per Day', 'Max Servers to Evaluate'],
+        'Value': ['25.00', '60.00', '8', '5']
+    })
+    st.dataframe(cost_data, hide_index=True)
+    
+    st.success("""
+    **Action:**
+    1. Go to the **Economic Analysis (Queues)** page.
+    2. **Convert** the $\lambda$ and $\mu$ values from **customers/minute** to **customers/hour** and input them.
+    3. Input the **Cost Parameters** from the table above.
+    4. Click **Calculate Optimal Configuration**.
+    5. Identify the configuration (number of servers) that yields the **minimum Total Daily Cost**.
+    """)
+
+    # ----------------------------------------
+    # STEP 3: Submission
+    # ----------------------------------------
+    st.subheader("Step 3: Submission Requirements")
+    st.markdown("""
+    Submit the following:
+    
+    1. The manually calculated **Arrival Rate (λ)** and **Service Rate (μ)** (in customers/hour).
+    2. The **Optimal Configuration** (number of servers) found.
+    3. The downloaded **queue_economic_analysis.csv** file.
+    4. A brief (1-paragraph) **justification** explaining the economic trade-off at the optimal point (why the next server is too expensive, and the previous one costs too much in waiting time).
+    """)
+
+
+# ========================================
 # INTEGRATION WITH MAIN APP
 # ========================================
 
@@ -1453,10 +1541,10 @@ def add_to_navigation():
     Add these pages to your existing PAGES dictionary in the main DOE app:
     
     PAGES = {
-        "Guide & Glossary": guide_and_glossary_page,
+        ... existing pages ...
         "Stochastic Processes & Queueing": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
-        ... other pages ...
+        "Graded Activity: Economic Opt.": graded_activity_page, # NEW PAGE ADDED HERE
     }
     """
     pass
