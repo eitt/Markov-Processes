@@ -1,0 +1,107 @@
+# =========================
+# Core Dependencies
+# =========================
+
+# Web Framework
+streamlit>=1.28.0,<2.0.0
+
+# Data Manipulation
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+
+# Statistical Analysis
+scipy>=1.10.0,<2.0.0
+statsmodels>=0.14.0,<1.0.0
+
+# Visualization
+plotly>=5.14.0,<6.0.0
+
+# =========================
+# Optional Dependencies
+# =========================
+
+# For better performance (optional)
+# numba>=0.57.0,<1.0.0
+
+# For extended statistical tests (optional)
+# scikit-learn>=1.3.0,<2.0.0
+
+# =========================
+# Development Dependencies
+# (Uncomment for development)
+# =========================
+
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.7.0
+# flake8>=6.1.0
+# mypy>=1.5.0
+
+# =========================
+# Platform-Specific Notes
+# =========================
+
+# Windows users: No special requirements
+# macOS users: No special requirements  
+# Linux users: May need to install system packages:
+#   sudo apt-get install python3-dev (Debian/Ubuntu)
+#   sudo yum install python3-devel (RHEL/CentOS)
+
+# =========================
+# Python Version
+# =========================
+
+# Requires: Python >=3.9,<3.13
+# Tested on: Python 3.9, 3.10, 3.11, 3.12
+
+# =========================
+# Installation Instructions
+# =========================
+
+# 1. Create virtual environment:
+#    python -m venv venv
+#
+# 2. Activate virtual environment:
+#    Windows: venv\Scripts\activate
+#    Unix/macOS: source venv/bin/activate
+#
+# 3. Install dependencies:
+#    pip install -r requirements.txt
+#
+# 4. Run application:
+#    streamlit run app.py
+
+# =========================
+# Troubleshooting
+# =========================
+
+# If you encounter issues:
+#
+# 1. Update pip:
+#    pip install --upgrade pip
+#
+# 2. Install wheel:
+#    pip install wheel
+#
+# 3. Try installing problem packages individually:
+#    pip install numpy
+#    pip install pandas
+#    (etc.)
+#
+# 4. For Apple Silicon (M1/M2) Macs:
+#    Use conda instead of pip for better compatibility:
+#    conda install numpy pandas scipy statsmodels plotly
+#    pip install streamlit
+#
+# 5. Clear pip cache if needed:
+#    pip cache purge
+
+# =========================
+# Version Lock File
+# =========================
+
+# For exact reproducibility, generate:
+#   pip freeze > requirements-lock.txt
+#
+# Then install with:
+#   pip install -r requirements-lock.txt
