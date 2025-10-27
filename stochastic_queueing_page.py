@@ -893,6 +893,41 @@ def stochastic_queueing_page():
             
             # Recommendation
             st.subheader("Recommendation")
+            
+            # ===================================================================
+            # START OF NEW EXPLANATION (as requested)
+            # ===================================================================
+            with st.expander("How is this 'Recommended Configuration' calculated?"):
+                st.markdown(r"""
+                This recommendation is based purely on **minimizing customer wait time**.
+                
+                The logic is a two-step process:
+                
+                1.  **Filter for Stability:** The tool first looks at all the configurations
+                    you simulated (from 1 to {max_servers} servers) and removes any
+                    that are "unstable." An unstable system is one where arrivals
+                    ($\lambda$) are faster than the total service capacity
+                    ($c \times \mu$), causing the queue to grow infinitely.
+                
+                2.  **Find Minimum Wait Time:** From the remaining "stable" options,
+                    it selects the one with the **lowest Average Wait Time ($Wq$)**.
+                
+                **Important Note:** This recommendation is *not* the economic optimum.
+                It only shows you the design that gives the **best customer service**,
+                regardless of cost.
+                
+                As your example with 5 servers shows,
+                achieving a near-zero wait time (0.000) often results in very low
+                server utilization (18.2%), which can be very expensive and inefficient.
+                
+                To find the true **cost-optimal** solution (which balances
+                server costs against waiting costs), please use the
+                **"Economic Analysis"** page.
+                """.format(max_servers=max_servers))
+            # ===================================================================
+            # END OF NEW EXPLANATION
+            # ===================================================================
+            
             stable_configs = comparison_df[comparison_df['stable']]
             
             if len(stable_configs) == 0:
@@ -912,8 +947,14 @@ def stochastic_queueing_page():
                 
                 # Cost-benefit analysis
                 st.markdown("**Trade-off Analysis:**")
-                st.markdown(f"- Going from 1 to {int(best['servers'])} servers reduces wait time by "
-                          f"{(1 - best['Wq_simulated']/comparison_df.loc[0, 'Wq_simulated'])*100:.1f}%")
+                # Handle potential division by zero if Wq_simulated[0] is 0
+                wq_at_one = comparison_df.loc[0, 'Wq_simulated']
+                if wq_at_one > 0:
+                    wait_reduction = (1 - best['Wq_simulated'] / wq_at_one) * 100
+                    st.markdown(f"- Going from 1 to {int(best['servers'])} servers reduces wait time by "
+                              f"{wait_reduction:.1f}%")
+                else:
+                    st.markdown(f"- Wait time is already minimal with one server.")
             
             # Download results
             st.download_button(
@@ -1222,10 +1263,6 @@ def economic_analysis_page():
     
     max_servers = st.sidebar.slider("Max Servers to Evaluate", 1, 20, 10, 1)
     
-    # ===================================================================
-    # START OF IMPROVED EXPLANATION
-    # ===================================================================
-
     st.subheader("How the Calculation Works")
     
     st.markdown(f"""
@@ -1264,10 +1301,6 @@ def economic_analysis_page():
       **lowest Total Daily Cost**. This is the "sweet spot" where you are
       spending just enough on servers to minimize customer waiting costs.
     """)
-    
-    # ===================================================================
-    # END OF IMPROVED EXPLANATION
-    # ===================================================================
 
     if st.button("Calculate Optimal Configuration"):
         results = []
