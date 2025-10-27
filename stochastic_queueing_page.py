@@ -433,6 +433,192 @@ def plot_markov_evolution(result):
 
 
 # ========================================
+# NEW PAGE: GUIDE & GLOSSARY
+# ========================================
+
+def guide_and_glossary_page():
+    """A new page to guide users and define terms."""
+    st.title("📘 Guide & Glossary")
+    st.markdown("By **Leonardo H. Talero-Sarmiento**")
+    
+    st.markdown("""
+    Welcome to the Stochastic Processes & Queueing Theory analyzer. This tool is
+    designed to help you understand and optimize systems where "customers"
+    (people, data packets, work items) arrive and wait for "service".
+    """)
+    
+    st.header("How to Use This Tool")
+    
+    st.subheader("1. 📖 Guide & Glossary (This Page)")
+    st.markdown("""
+    Start here! This page explains the key concepts and defines all the
+    acronyms and technical terms used in the other modules.
+    """)
+    
+    st.subheader("2. 📤 Upload Queue Data")
+    st.markdown("""
+    Use this mode if you have **your own historical data** of arrivals and services.
+    
+    - **What it does:** Calculates the key performance metrics from your data
+      (like average wait time, server utilization, etc.).
+    - **How to use:**
+        1.  Download the template CSV to see the required format.
+        2.  Prepare your data (must have `arrival_time` and `service_time`).
+        3.  Upload your CSV file.
+        4.  The app will instantly analyze your data, show descriptive statistics,
+            and compare it to the theoretical M/M/1 model.
+    """)
+    
+    st.subheader("3. 🎲 Simulate Queue Systems")
+    st.markdown("""
+    Use this mode to **model and test hypothetical queue systems**. This is
+    perfect for "what-if" analysis (e.g., "What happens if I add another server?").
+    
+    - **What it does:** Simulates thousands of customer arrivals based on parameters
+      you set (arrival rate, service rate) and compares different designs
+      (e.g., 1 server vs. 2 servers vs. 3 servers).
+    - **How to use:**
+        1.  Go to the sidebar and set your **System Parameters**:
+            - **Arrival Rate (λ):** How many customers arrive per unit of time?
+            - **Service Rate (μ):** How many customers can one server handle per
+              unit of time?
+        2.  Click the "Run Simulation & Comparison" button.
+        3.  Analyze the results to find the best balance of wait time and
+            server utilization.
+    """)
+
+    st.subheader("4. 🔗 Markov Chain Analysis")
+    st.markdown("""
+    Use this mode for **probabilistic state-based systems**. This is useful for
+    modeling things like weather patterns, machine reliability (Working vs. Broken),
+    or customer loyalty (Brand A vs. Brand B).
+    
+    - **What it does:** Calculates the long-term probabilities (steady-state)
+      of a system given its transition rules.
+    - **How to use:**
+        1.  In the sidebar, select the **Number of States** (e.g., 2 states:
+            "Working" and "Broken").
+        2.  Enter the **Transition Matrix (P)**. Each cell `P(i, j)` is the
+            probability of moving *from* state `i` *to* state `j` in one time step.
+            **Each row must sum to 1.0!**
+        3.  Click "Analyze Markov Chain".
+        4.  The tool will show you the long-run probability of being in any
+            given state (the "Steady-State Distribution").
+    """)
+    
+    st.subheader("5. 💰 Economic Analysis")
+    st.markdown("""
+    Use this mode to **find the most cost-effective queue design**.
+    
+    - **What it does:** Balances the **cost of servers** (e.g., salaries)
+      against the **cost of customer waiting** (e.g., lost business,
+      customer dissatisfaction).
+    - **How to use:**
+        1.  Set the system parameters (λ and μ) in the sidebar.
+        2.  Enter your **Cost Parameters**:
+            - **Cost per Server:** How much does it cost to operate one server
+              (per hour)?
+            - **Customer Wait Cost:** How much does it cost your business for
+              a customer to wait (per hour)?
+        3.  Click "Calculate Optimal Configuration".
+        4.  The tool will output a table showing the total cost for each design
+            and recommend the one with the **lowest total cost**.
+    """)
+    
+    st.header("Glossary of Terms & Acronyms")
+    
+    with st.expander("Expand to see all definitions..."):
+        st.subheader("Queueing Theory (Kendall's Notation: A/B/c)")
+        st.markdown("""
+        Queueing theory is described using **Kendall's Notation (A/B/c)**, which
+        defines the system's properties.
+        - **A (Arrival Process):** Describes how customers arrive.
+            - **M:** Markovian or Poisson process. This means arrivals are random
+              and independent. The time *between* arrivals follows an
+              **exponential distribution**.
+        - **B (Service Process):** Describes how long service takes.
+            - **M:** Markovian. Service times are random and independent,
+              following an **exponential distribution**.
+        - **c (Servers):** The number of parallel servers.
+        
+        **M/M/1:** A system with Poisson arrivals, exponential service times,
+        and **one server**.
+        
+        **M/M/c:** A system with Poisson arrivals, exponential service times,
+        and **'c' parallel servers**.
+        """)
+        
+        st.subheader("Core Metrics (The Greeks)")
+        st.markdown(r"""
+        - **λ (Lambda): Arrival Rate**
+            - **Definition:** The average number of customers arriving per
+              unit of time (e.g., 10 customers/hour).
+            - **Calculation:** $\lambda = 1 / (\text{Average Interarrival Time})$
+        
+        - **μ (Mu): Service Rate (per server)**
+            - **Definition:** The average number of customers one server can
+              process per unit of time (e.g., 12 customers/hour).
+            - **Calculation:** $\mu = 1 / (\text{Average Service Time})$
+        
+        - **ρ (Rho): System Utilization**
+            - **Definition:** The proportion of time that servers are busy.
+              It's a measure of system "business".
+            - **Calculation (M/M/1):** $\rho = \lambda / \mu$
+            - **Calculation (M/M/c):** $\rho = \lambda / (c \times \mu)$
+            - **Rule:** If **$\rho \ge 1$**, the system is **UNSTABLE**. Arrivals
+              are happening faster than they can be served, and the queue will
+              grow to infinity.
+        """)
+
+        st.subheader("Performance Metrics (Little's Law)")
+        st.markdown(r"""
+        These metrics tell you how well your system is performing.
+        
+        - **L: Average Customers in System**
+            - **Definition:** The average number of customers either waiting
+              *or* being served.
+            - **M/M/1 Formula:** $L = \lambda / (\mu - \lambda) = \rho / (1 - \rho)$
+        
+        - **Lq: Average Customers in Queue**
+            - **Definition:** The average number of customers *only* waiting
+              in the line.
+            - **M/M/1 Formula:** $L_q = \lambda^2 / (\mu(\mu - \lambda)) = \rho^2 / (1 - \rho)$
+        
+        - **W: Average Time in System**
+            - **Definition:** The average total time a customer spends from
+              arrival to service completion (waiting + service).
+            - **M/M/1 Formula:** $W = 1 / (\mu - \lambda) = L / \lambda$
+        
+        - **Wq: Average Time in Queue**
+            - **Definition:** The average time a customer spends *only* waiting
+              in line (before service begins).
+            - **M/M/1 Formula:** $W_q = \lambda / (\mu(\mu - \lambda)) = L_q / \lambda$
+        """)
+        
+        st.subheader("Markov Chain Terms")
+        st.markdown(r"""
+        - **State:** A specific condition the system can be in (e.g., "Sunny",
+          "Broken").
+        - **Transition Matrix (P):** A square matrix where `P(i, j)` is the
+          probability of moving from state `i` to state `j` in one time step.
+          All rows must sum to 1.
+        - **State Distribution (π(t)):** A vector showing the probability
+          of being in each state at time `t`.
+            - $\pi(0)$ is the initial state.
+            - $\pi(t+1) = \pi(t) \times P$
+        - **Steady-State Distribution (π):** The long-run probability
+          distribution that the system settles into, regardless of the
+          starting state (assuming the chain is regular).
+            - It is the vector $\pi$ that solves the equation: $\pi = \pi \times P$
+        - **Expected Return Time:** For a given state `i`, this is the
+          average number of steps it takes to return to state `i` after
+          leaving it.
+            - **Calculation:** $1 / \pi_i$ (where $\pi_i$ is the steady-state
+              probability of state `i`).
+        """)
+
+
+# ========================================
 # MAIN PAGE FUNCTION
 # ========================================
 
@@ -442,11 +628,14 @@ def stochastic_queueing_page():
                 "[View profile](https://apolo.unab.edu.co/en/persons/leonardo-talero)")
     
     st.markdown("""
-    This page provides tools for analyzing **queueing systems** and **Markov chains**:
+    This page provides tools for analyzing **queueing systems** and **Markov chains**.
+    Select a mode from the sidebar to begin.
     
-    - **Upload & Analyze**: Upload real queueing data in long format
-    - **Simulate Queues**: Compare M/M/1, M/M/c configurations
-    - **Markov Chains**: Analyze discrete-time Markov processes
+    - **📤 Upload Queue Data**: Analyze your own historical data.
+    - **🎲 Simulate Queue Systems**: Model and compare hypothetical M/M/c systems.
+    - **🔗 Markov Chain Analysis**: Analyze discrete-time probabilistic systems.
+    
+    For a full explanation of terms, please see the **"📘 Guide & Glossary"** page.
     """)
     
     # Sidebar mode selection
@@ -498,6 +687,24 @@ def stochastic_queueing_page():
                 df_analyzed, metrics = analyze_uploaded_queue_data(df_raw)
                 
                 st.subheader("📊 Descriptive Statistics")
+                with st.expander("What do these metrics mean?"):
+                    st.markdown(r"""
+                    These metrics are calculated *directly from your data*.
+                    - **Arrival Rate (λ):** The average number of customers
+                      arriving per unit of time.
+                      ($\lambda = 1 / \text{Avg. Interarrival Time}$)
+                    - **Service Rate (μ):** The average number of customers
+                      *one server* can process per unit of time.
+                      ($\mu = 1 / \text{Avg. Service Time}$)
+                    - **Utilization (ρ):** The proportion of time the server
+                      is busy. ($\rho = \lambda / \mu$). If $\rho \ge 1$,
+                      your system is unstable!
+                    - **Avg Wait Time (Wq):** The average time spent in the
+                      queue before service.
+                    - **Avg System Time (W):** The average total time
+                      (Wait + Service).
+                    """)
+
                 col1, col2, col3, col4 = st.columns(4)
                 with col1:
                     st.metric("Arrival Rate (λ)", f"{metrics['lambda']:.3f}/unit time")
@@ -522,6 +729,14 @@ def stochastic_queueing_page():
                 
                 # Theoretical comparison (M/M/1)
                 st.subheader("📐 M/M/1 Theoretical Comparison")
+                st.markdown("""
+                This compares your observed data to the **theoretical M/M/1 model**
+                (assuming Poisson arrivals and exponential service times)
+                using your data's calculated λ and μ.
+                
+                If your observed values are very different from the theoretical
+                ones, it suggests your system is *not* M/M/1.
+                """)
                 theoretical = mm1_theoretical(metrics['lambda'], metrics['mu'])
                 
                 comparison = pd.DataFrame({
@@ -541,10 +756,21 @@ def stochastic_queueing_page():
                 tab1, tab2, tab3 = st.tabs(["Timeline", "Distributions", "Data Table"])
                 
                 with tab1:
+                    st.markdown("""
+                    This chart shows the journey of each customer.
+                    - **Red Line:** Time spent waiting in the queue.
+                    - **Green Line:** Time spent in service.
+                    """)
                     fig_timeline = plot_queue_timeline(df_analyzed)
                     st.plotly_chart(fig_timeline, use_container_width=True)
                 
                 with tab2:
+                    st.markdown("""
+                    These histograms show the *distribution* of times.
+                    - **M/M/1 systems** have **Exponential** distributions.
+                    - If your data does not look exponential (e.g., it looks
+                      like a Normal/Bell curve), your system is not "M/M".
+                    """)
                     col1, col2 = st.columns(2)
                     with col1:
                         fig_wait = go.Figure()
@@ -564,7 +790,7 @@ def stochastic_queueing_page():
                     with col2:
                         fig_service = go.Figure()
                         fig_service.add_trace(go.Histogram(
-                            x=df_analyZED['service_time'],
+                            x=df_analyzed['service_time'],
                             nbinsx=20,
                             name='Service Time'
                         ))
@@ -593,6 +819,11 @@ def stochastic_queueing_page():
     # ========================================
     elif mode == "🎲 Simulate Queue Systems":
         st.header("Queue System Simulation & Comparison")
+        st.markdown("""
+        This tool uses **Monte Carlo simulation** to model M/M/c queueing systems.
+        It generates thousands of random customer arrivals and services based on
+        your parameters to predict system performance.
+        """)
         
         st.sidebar.subheader("System Parameters")
         lambda_rate = st.sidebar.number_input("Arrival Rate (λ)", 0.1, 100.0, 5.0, 0.5)
@@ -620,6 +851,12 @@ def stochastic_queueing_page():
                 )
             
             st.subheader("📊 Performance Comparison")
+            st.markdown(f"""
+            This table compares the simulated performance for systems with
+            1 server up to {max_servers} servers.
+            - **Green bars** indicate a STABLE system ($\rho < 1$).
+            - **Red bars** indicate an UNSTABLE system ($\rho \ge 1$).
+            """)
             
             # Display table
             st.dataframe(comparison_df.style.format({
@@ -671,6 +908,7 @@ def stochastic_queueing_page():
             
             # Detailed single simulation
             st.subheader("🔍 Detailed Simulation (Select Configuration)")
+            st.markdown("Select one of the configurations above to see its detailed simulation.")
             selected_servers = st.selectbox(
                 "Number of Servers",
                 comparison_df['servers'].tolist(),
@@ -727,7 +965,10 @@ def stochastic_queueing_page():
         st.header("Discrete-Time Markov Chain Analysis")
         
         st.markdown("""
-        Analyze the evolution of a discrete-time Markov chain given a transition matrix **P**.
+        Analyze the evolution of a discrete-time Markov chain given a
+        **transition matrix (P)**.
+        A Markov chain models a system that moves between different **states**
+        (e.g., "Sunny", "Cloudy", "Rainy") based on fixed probabilities.
         """)
         
         st.sidebar.subheader("Chain Configuration")
@@ -735,8 +976,13 @@ def stochastic_queueing_page():
         n_steps = st.sidebar.slider("Time Steps to Simulate", 5, 100, 20, 5)
         
         # Manual matrix input
-        st.subheader("Transition Matrix P")
-        st.markdown("Enter the transition probabilities (rows must sum to 1):")
+        st.subheader("Transition Matrix (P)")
+        st.markdown(f"""
+        Enter the transition probabilities. `P(i, j)` is the probability of
+        moving **FROM state i TO state j**.
+        
+        **⚠️ IMPORTANT: Each row MUST sum to 1.0.**
+        """)
         
         P = np.zeros((n_states, n_states))
         
@@ -809,7 +1055,15 @@ def stochastic_queueing_page():
             st.dataframe(P_df.style.format("{:.3f}"))
             
             # Steady state
-            st.markdown("**Steady-State Distribution (π):**")
+            st.markdown(r"""
+            **Steady-State Distribution (π):**
+            
+            This is the long-run probability distribution. After many steps,
+            the probability of being in any given state "settles" to these
+            values, regardless of the starting state.
+            
+            It is the vector $\pi$ that solves the equation: $\pi = \pi \times P$.
+            """)
             steady_df = pd.DataFrame({
                 'State': [f"State {i}" for i in range(n_states)],
                 'Probability': result['steady_state']
@@ -818,6 +1072,11 @@ def stochastic_queueing_page():
             
             # Visualization
             st.subheader("📈 State Probability Evolution")
+            st.markdown("""
+            This chart shows the probability of being in each state at each
+            time step, starting from your initial condition. You can see the
+            probabilities converge towards the steady-state values.
+            """)
             fig_evolution = plot_markov_evolution(result)
             st.plotly_chart(fig_evolution, use_container_width=True)
             
@@ -878,7 +1137,15 @@ def stochastic_queueing_page():
                 st.warning("⚠️ This chain may not be regular (some states unreachable)")
             
             # Expected return time
-            st.markdown("**Expected Return Times:**")
+            st.markdown(r"""
+            **Expected Return Times:**
+            
+            This is the average number of steps it takes to return to a
+            state after leaving it.
+            
+            **Calculation:** $1 / \pi_i$ (where $\pi_i$ is the steady-state
+            probability for state `i`).
+            """)
             return_times = 1 / result['steady_state']
             return_df = pd.DataFrame({
                 'State': [f"State {i}" for i in range(n_states)],
@@ -896,15 +1163,26 @@ def economic_analysis_page():
     st.header("💰 Economic Analysis of Queue Systems")
     st.markdown("By **Leonardo H. Talero-Sarmiento**")
     
-    st.markdown("""
-    Determine the optimal number of servers by balancing:
-    - **Server costs** (salary, equipment, space)
-    - **Customer waiting costs** (lost sales, dissatisfaction)
+    st.markdown(r"""
+    This tool helps you find the **optimal number of servers (c)** by
+    balancing two competing costs:
+    
+    1.  **Cost of Service ($C_s$):** The cost of operating the servers
+        (e.g., salaries, equipment). This cost *increases* as you add
+        more servers.
+    2.  **Cost of Waiting ($C_w$):** The cost of customers waiting in the
+        system (e.g., lost sales, dissatisfaction, penalties). This cost
+        *decreases* as you add more servers.
+    
+    **Goal:** Find the number of servers `c` that minimizes the
+    **Total Cost**.
+    
+    $Total Cost = (\text{Server Cost}) + (\text{Waiting Cost})$
     """)
     
     st.sidebar.header("System Parameters")
-    lambda_rate = st.sidebar.number_input("Arrival Rate (λ)", 0.1, 100.0, 10.0, 0.5)
-    mu_rate = st.sidebar.number_input("Service Rate (μ)", 0.1, 100.0, 12.0, 0.5)
+    lambda_rate = st.sidebar.number_input("Arrival Rate (λ) [customers/hr]", 0.1, 100.0, 10.0, 0.5)
+    mu_rate = st.sidebar.number_input("Service Rate (μ) [customers/hr]", 0.1, 100.0, 12.0, 0.5)
     
     st.sidebar.subheader("Cost Parameters")
     cost_server_hr = st.sidebar.number_input("Cost per Server per Hour ($)", 1.0, 1000.0, 50.0, 5.0)
@@ -913,6 +1191,24 @@ def economic_analysis_page():
     
     max_servers = st.sidebar.slider("Max Servers to Evaluate", 1, 20, 10, 1)
     
+    st.subheader("Calculation Logic")
+    st.markdown(r"""
+    For each number of servers `c` from 1 to {max_servers}:
+    
+    1.  **Calculate M/M/c theoretical metrics:**
+        - $L_q$: Average number of customers in the queue.
+        - $W_q$: Average time a customer waits in the queue.
+    
+    2.  **Calculate Daily Costs:**
+        - $Server Cost = (\text{Cost per Server}) \times (\text{Hours}) \times c$
+        - $Waiting Cost = (\text{Arrival Rate } \lambda) \times (\text{Hours}) \times (\text{Avg Wait } W_q) \times (\text{Wait Cost})$
+        - $Total Cost = Server Cost + Waiting Cost$
+    
+    *(Note: This analysis uses $W_q$ (time in queue). You could also
+    use $W$ (time in system) depending on whether the customer's cost
+    is incurred only while waiting or for their entire visit.)*
+    """.format(max_servers=max_servers))
+    
     if st.button("💵 Calculate Optimal Configuration"):
         results = []
         
@@ -920,6 +1216,15 @@ def economic_analysis_page():
             theoretical = mmc_theoretical(lambda_rate, mu_rate, c)
             
             if theoretical['W'] == np.inf:
+                # System is unstable, skip
+                results.append({
+                    'servers': c,
+                    'rho': theoretical['rho'],
+                    'Wq': np.inf, 'W': np.inf, 'Lq': np.inf,
+                    'server_cost_daily': cost_server_hr * hours_per_day * c,
+                    'wait_cost_daily': np.inf,
+                    'total_cost_daily': np.inf
+                })
                 continue
             
             # Daily costs
@@ -951,9 +1256,16 @@ def economic_analysis_page():
         
         results_df = pd.DataFrame(results)
         
-        # Find optimal
-        optimal_idx = results_df['total_cost_daily'].idxmin()
-        optimal = results_df.loc[optimal_idx]
+        # Find optimal (ignoring unstable inf costs)
+        stable_results = results_df[results_df['total_cost_daily'] != np.inf]
+        
+        if stable_results.empty:
+            st.error("No stable configurations found in the evaluated range.")
+            st.dataframe(results_df)
+            return
+        
+        optimal_idx = stable_results['total_cost_daily'].idxmin()
+        optimal = stable_results.loc[optimal_idx]
         
         st.subheader("📊 Cost Analysis Results")
         st.dataframe(results_df.style.format({
@@ -977,6 +1289,7 @@ def economic_analysis_page():
         """)
         
         # Visualization
+        st.subheader("📈 Cost-Benefit Trade-off")
         fig = make_subplots(
             rows=1, cols=2,
             subplot_titles=('Cost Breakdown', 'Total Cost Curve')
@@ -1040,9 +1353,10 @@ def add_to_navigation():
     Add these pages to your existing PAGES dictionary in the main DOE app:
     
     PAGES = {
-        ... existing pages ...
+        "📘 Guide & Glossary": guide_and_glossary_page,
         "Stochastic Processes & Queueing": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
+        ... other pages ...
     }
     """
     pass
@@ -1055,7 +1369,9 @@ def add_to_navigation():
 if __name__ == "__main__":
     st.set_page_config(page_title="Stochastic Processes", layout="wide")
     
+    # Add the new guide page to the dictionary
     PAGES = {
+        "📘 Guide & Glossary": guide_and_glossary_page,
         "Queueing Analysis": stochastic_queueing_page,
         "Economic Analysis": economic_analysis_page,
     }
