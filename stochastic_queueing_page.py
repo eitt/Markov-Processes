@@ -1443,7 +1443,6 @@ def economic_analysis_page():
             mime="text/csv"
         )
 
-
 # ========================================
 # NEW PAGE: GRADED ACTIVITY
 # ========================================
@@ -1531,7 +1530,7 @@ def graded_activity_page():
     4. A brief (1-paragraph) **justification** explaining the economic trade-off at the optimal point (why the next server is too expensive, and the previous one costs too much in waiting time).
     """)
 
-
+    
 # ========================================
 # INTEGRATION WITH MAIN APP
 # ========================================
@@ -1541,10 +1540,10 @@ def add_to_navigation():
     Add these pages to your existing PAGES dictionary in the main DOE app:
     
     PAGES = {
-        ... existing pages ...
+        "Guide & Glossary": guide_and_glossary_page,
         "Stochastic Processes & Queueing": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
-        "Graded Activity: Economic Opt.": graded_activity_page, # NEW PAGE ADDED HERE
+        ... other pages ...
     }
     """
     pass
