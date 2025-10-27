@@ -11,7 +11,7 @@ from plotly.subplots import make_subplots
 import streamlit as st
 from scipy import stats
 import itertools
-import math  # Import math for factorial
+import math # Import math for factorial
 
 
 # ========================================
@@ -27,18 +27,7 @@ def generate_queue_template():
     })
     return template
 
-# NEW FUNCTION FOR GRADED ACTIVITY
-def generate_graded_template():
-    """Generate the specific CSV template for the graded activity"""
-    template = pd.DataFrame({
-        'customer_id': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        'arrival_time': [0.00, 4.80, 9.00, 14.10, 18.00, 23.50, 28.50, 34.00, 39.50, 45.00, 50.80, 56.50],
-        'service_time': [3.5, 4.0, 3.2, 4.5, 3.8, 4.1, 3.6, 4.2, 3.9, 4.4, 3.7, 4.0]
-    })
-    return template
 
-
-# MODIFIED/FIXED FUNCTION
 @st.cache_data
 def analyze_uploaded_queue_data(df):
     """Analyze uploaded queueing data (long format)"""
@@ -64,7 +53,7 @@ def analyze_uploaded_queue_data(df):
         df.loc[i, 'service_end'] = df.loc[i, 'service_start'] + df.loc[i, 'service_time']
         df.loc[i, 'system_time'] = df.loc[i, 'service_end'] - df.loc[i, 'arrival_time']
     
-    # --- FIXED RATE CALCULATION ---
+    # --- Robust Rate Calculation ---
     n_customers = len(df)
     mu_hat_per_unit = 1 / df['service_time'].mean()  # Service rate per unit time
 
@@ -81,8 +70,8 @@ def analyze_uploaded_queue_data(df):
                 lambda_hat = 1 / df['interarrival_time'].mean()
     
     rho = lambda_hat / mu_hat_per_unit if not np.isnan(lambda_hat) else np.nan
-    # --- END OF FIX ---
-
+    # --- End of Fix ---
+    
     metrics = {
         'lambda': lambda_hat,
         'mu': mu_hat_per_unit,
@@ -133,7 +122,6 @@ def mm1_theoretical(lambda_rate, mu_rate):
     }
 
 
-# MODIFIED/FIXED FUNCTION
 def mmc_theoretical(lambda_rate, mu_rate, c):
     """Calculate M/M/c queue theoretical metrics"""
     if mu_rate is None or lambda_rate is None or np.isnan(mu_rate) or np.isnan(lambda_rate) or c is None:
@@ -154,11 +142,9 @@ def mmc_theoretical(lambda_rate, mu_rate, c):
             'C': 1.0 # Probability of waiting is 1 (or approaches 1)
         }
     
-    # --- FIXED BUG: Use math.factorial ---
-    # Calculate P0 (Erlang C formula)
+    # Use math.factorial for P0 calculation
     sum_term = sum([(lambda_rate/mu_rate)**n / math.factorial(n) for n in range(c)])
     last_term = ((lambda_rate/mu_rate)**c / math.factorial(c)) * (1 / (1 - rho))
-    # --- END OF FIX ---
     
     P0 = 1 / (sum_term + last_term)
     
@@ -322,7 +308,7 @@ def plot_queue_timeline(df):
     fig = go.Figure()
     
     for i, row in df.iterrows():
-        customer = row.get('customer_id', i + 1) # Use customer_id if available
+        customer = row.get('customer_id', i + 1)
         
         # Waiting time (red)
         if row['wait_time'] > 0:
@@ -351,7 +337,7 @@ def plot_queue_timeline(df):
         title='Queue Timeline (Gantt Chart)',
         xaxis_title='Time',
         yaxis_title='Customer ID',
-        height=max(500, len(df) * 20), # Make height dynamic
+        height=max(500, len(df) * 20),
         hovermode='closest'
     )
     
@@ -416,7 +402,7 @@ def plot_comparison_table(comparison_df):
         showlegend=False
     ), row=1, col=2)
     
-    # Queue Length (Using L_simulated, which is avg_queue_length from sim results)
+    # Queue Length
     fig.add_trace(go.Bar(
         x=comparison_df['servers'], 
         y=comparison_df['L_simulated'],
@@ -1460,97 +1446,6 @@ def economic_analysis_page():
             mime="text/csv"
         )
 
-# ========================================
-# NEW PAGE 4: GRADED ACTIVITY
-# ========================================
-
-def graded_activity_page():
-    st.title("Graded Activity: Economic Optimization")
-    st.markdown("By **Leonardo H. Talero-Sarmiento**")
-    st.markdown("Use the application's tools to find the most cost-effective number of servers based on real-world observed data.")
-    
-    st.header("Scenario: University Coffee Shop Line")
-    
-    st.markdown("""
-    A university coffee shop tracked customer flow for **1 hour (60 minutes)** during the morning rush. The data below shows the arrival and service times (in minutes) for 12 customers.
-    
-    Your task is to:
-    1. **Calculate Rates (λ and μ)** using the **"Queueing Analysis (Main)"** tool.
-    2. **Determine Optimal Servers** using the **"Economic Analysis (Queues)"** tool with given costs.
-    3. **Download** the required results.
-    """)
-    
-    # ----------------------------------------
-    # STEP 1: Data Acquisition and Rate Calculation
-    # ----------------------------------------
-    st.subheader("Step 1: Calculate Arrival (λ) and Service (μ) Rates")
-    
-    st.markdown("""
-    Use the data provided in the template below.
-    - **Time Unit:** The data is in **minutes**.
-    - The **"Upload Queue Data"** tool will calculate rates as **customers/minute**.
-    - You must convert these rates to **customers/hour** (multiply by 60) for the next step.
-    """)
-    
-    # Generate and display template
-    data_template = generate_graded_template()
-    st.dataframe(data_template)
-    
-    # Download button for the data
-    st.download_button(
-        "Download Activity Data CSV",
-        data=data_template.to_csv(index=False),
-        file_name="graded_activity_data.csv",
-        mime="text/csv"
-    )
-    
-    st.info("""
-    **Action:**
-    1. Download the `graded_activity_data.csv` file.
-    2. Go to the **"Queueing Analysis (Main)"** page using the sidebar.
-    3. Select the **"Upload Queue Data"** mode.
-    4. Upload the `graded_activity_data.csv` file.
-    5. Note the calculated **Arrival Rate (λ)** and **Service Rate (μ)**.
-    6. **Multiply these two values by 60** to get "customers/hour".
-    """)
-    
-    # ----------------------------------------
-    # STEP 2: Economic Optimization
-    # ----------------------------------------
-    st.subheader("Step 2: Find the Optimal Configuration")
-    
-    st.markdown("""
-    Use the following economic parameters for the coffee shop:
-    """)
-    
-    cost_data = pd.DataFrame({
-        'Parameter': ['Cost per Server per Hour ($)', 'Customer Wait Cost per Hour ($)', 'Operating Hours per Day', 'Max Servers to Evaluate'],
-        'Value': ['25.00', '60.00', '8', '5']
-    })
-    st.dataframe(cost_data, hide_index=True)
-    
-    st.success("""
-    **Action:**
-    1. Go to the **"Economic Analysis (Queues)"** page using the sidebar.
-    2. In the sidebar, enter your **hourly** $\lambda$ and $\mu$ values from Step 1.
-    3. Enter the **Cost Parameters** from the table above.
-    4. Click **"Calculate Optimal Configuration"**.
-    5. Identify the configuration (number of servers) that yields the **lowest Total Daily Cost**.
-    """)
-
-    # ----------------------------------------
-    # STEP 3: Submission
-    # ----------------------------------------
-    st.subheader("Step 3: Submission Requirements")
-    st.markdown("""
-    Submit the following for your grade:
-    
-    1. Your calculated **Arrival Rate (λ)** and **Service Rate (μ)**, both in **customers/hour**.
-    2. The **Optimal Configuration** (number of servers) found by the tool.
-    3. The downloaded **`queue_economic_analysis.csv`** file from the Economic Analysis page.
-    4. A brief (1-paragraph) **justification** explaining the economic trade-off at the optimal point (why the next server is too expensive, and the previous one costs too much in waiting time).
-    """)
-
 
 # ========================================
 # INTEGRATION WITH MAIN APP
@@ -1564,7 +1459,6 @@ def add_to_navigation():
         "Guide & Glossary": guide_and_glossary_page,
         "Queueing Analysis (Main)": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
-        "Graded Activity: Economic Opt.": graded_activity_page,
         ... other pages ...
     }
     """
@@ -1575,22 +1469,20 @@ def add_to_navigation():
 # STANDALONE EXECUTION (for testing)
 # ========================================
 
-# --- FIXED INTEGRATION ---
 if __name__ == "__main__":
     st.set_page_config(page_title="Stochastic Processes", layout="wide")
     
-    # Add the new pages to the dictionary
+    # Reverted PAGES dictionary
     PAGES = {
         "Guide & Glossary": guide_and_glossary_page,
-        "Queueing Analysis (Main)": stochastic_queueing_page,
-        "Economic Analysis (Queues)": economic_analysis_page,
-        "Graded Activity: Economic Opt.": graded_activity_page, # <-- FIXED
+        "Queueing Analysis": stochastic_queueing_page,
+        "Economic Analysis": economic_analysis_page,
     }
     
     st.sidebar.title('Navigation')
     choice = st.sidebar.radio("Go to", list(PAGES.keys()))
     
-    # Clear session state if the page choice changes to prevent old calculations from showing
+    # Clear session state if the page choice changes
     if 'current_page' not in st.session_state:
         st.session_state.current_page = choice
     
