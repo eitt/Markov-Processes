@@ -27,6 +27,7 @@ def generate_queue_template():
     return template
 
 
+@st.cache_data
 def analyze_uploaded_queue_data(df):
     """Analyze uploaded queueing data (long format)"""
     df = df.sort_values('arrival_time').reset_index(drop=True)
@@ -145,6 +146,7 @@ def mmc_theoretical(lambda_rate, mu_rate, c):
     }
 
 
+@st.cache_data
 def simulate_queue(lambda_rate, mu_rate, n_servers=1, n_customers=1000, seed=None):
     """Monte Carlo simulation of M/M/c queue"""
     rng = np.random.default_rng(seed)
@@ -205,6 +207,7 @@ def simulate_queue(lambda_rate, mu_rate, n_servers=1, n_customers=1000, seed=Non
     return results
 
 
+@st.cache_data
 def compare_queue_designs(lambda_rate, mu_rate, max_servers=5, n_customers=1000, seed=None):
     """Compare different queue configurations"""
     results = []
@@ -237,6 +240,7 @@ def compare_queue_designs(lambda_rate, mu_rate, max_servers=5, n_customers=1000,
 # MARKOV CHAIN FUNCTIONS
 # ========================================
 
+@st.cache_data
 def analyze_markov_chain(P, n_steps=10, initial_state=None):
     """Analyze a discrete-time Markov chain"""
     n_states = P.shape[0]
@@ -438,7 +442,7 @@ def plot_markov_evolution(result):
 
 def guide_and_glossary_page():
     """A new page to guide users and define terms."""
-    st.title("📘 Guide & Glossary")
+    st.title("Guide & Glossary")
     st.markdown("By **Leonardo H. Talero-Sarmiento**")
     
     st.markdown("""
@@ -449,13 +453,13 @@ def guide_and_glossary_page():
     
     st.header("How to Use This Tool")
     
-    st.subheader("1. 📖 Guide & Glossary (This Page)")
+    st.subheader("1. Guide & Glossary (This Page)")
     st.markdown("""
     Start here! This page explains the key concepts and defines all the
     acronyms and technical terms used in the other modules.
     """)
     
-    st.subheader("2. 📤 Upload Queue Data")
+    st.subheader("2. Upload Queue Data")
     st.markdown("""
     Use this mode if you have **your own historical data** of arrivals and services.
     
@@ -469,7 +473,7 @@ def guide_and_glossary_page():
             and compare it to the theoretical M/M/1 model.
     """)
     
-    st.subheader("3. 🎲 Simulate Queue Systems")
+    st.subheader("3. Simulate Queue Systems")
     st.markdown("""
     Use this mode to **model and test hypothetical queue systems**. This is
     perfect for "what-if" analysis (e.g., "What happens if I add another server?").
@@ -487,7 +491,7 @@ def guide_and_glossary_page():
             server utilization.
     """)
 
-    st.subheader("4. 🔗 Markov Chain Analysis")
+    st.subheader("4. Markov Chain Analysis")
     st.markdown("""
     Use this mode for **probabilistic state-based systems**. This is useful for
     modeling things like weather patterns, machine reliability (Working vs. Broken),
@@ -506,7 +510,7 @@ def guide_and_glossary_page():
             given state (the "Steady-State Distribution").
     """)
     
-    st.subheader("5. 💰 Economic Analysis")
+    st.subheader("5. Economic Analysis")
     st.markdown("""
     Use this mode to **find the most cost-effective queue design**.
     
@@ -631,24 +635,24 @@ def stochastic_queueing_page():
     This page provides tools for analyzing **queueing systems** and **Markov chains**.
     Select a mode from the sidebar to begin.
     
-    - **📤 Upload Queue Data**: Analyze your own historical data.
-    - **🎲 Simulate Queue Systems**: Model and compare hypothetical M/M/c systems.
-    - **🔗 Markov Chain Analysis**: Analyze discrete-time probabilistic systems.
+    - **Upload Queue Data**: Analyze your own historical data.
+    - **Simulate Queue Systems**: Model and compare hypothetical M/M/c systems.
+    - **Markov Chain Analysis**: Analyze discrete-time probabilistic systems.
     
-    For a full explanation of terms, please see the **"📘 Guide & Glossary"** page.
+    For a full explanation of terms, please see the **"Guide & Glossary"** page.
     """)
     
     # Sidebar mode selection
     st.sidebar.header("Analysis Mode")
     mode = st.sidebar.radio(
         "Select Mode",
-        ["📤 Upload Queue Data", "🎲 Simulate Queue Systems", "🔗 Markov Chain Analysis"]
+        ["Upload Queue Data", "Simulate Queue Systems", "Markov Chain Analysis"]
     )
     
     # ========================================
     # MODE 1: UPLOAD DATA
     # ========================================
-    if mode == "📤 Upload Queue Data":
+    if mode == "Upload Queue Data":
         st.header("Upload & Analyze Queue Data")
         
         st.markdown("""
@@ -661,7 +665,7 @@ def stochastic_queueing_page():
         # Download template
         template = generate_queue_template()
         st.download_button(
-            "📥 Download Template CSV",
+            "Download Template CSV",
             data=template.to_csv(index=False),
             file_name="queue_data_template.csv",
             mime="text/csv"
@@ -686,7 +690,7 @@ def stochastic_queueing_page():
                 # Analyze
                 df_analyzed, metrics = analyze_uploaded_queue_data(df_raw)
                 
-                st.subheader("📊 Descriptive Statistics")
+                st.subheader("Descriptive Statistics")
                 with st.expander("What do these metrics mean?"):
                     st.markdown(r"""
                     These metrics are calculated *directly from your data*.
@@ -713,7 +717,7 @@ def stochastic_queueing_page():
                 with col3:
                     st.metric("Utilization (ρ)", f"{metrics['rho']:.3f}")
                     if metrics['rho'] >= 1:
-                        st.error("⚠️ System is UNSTABLE (ρ ≥ 1)")
+                        st.error("System is UNSTABLE (ρ ≥ 1)")
                 with col4:
                     st.metric("Customers", metrics['n_customers'])
                 
@@ -728,7 +732,7 @@ def stochastic_queueing_page():
                     st.caption(f"Max: {metrics['max_system']:.2f}")
                 
                 # Theoretical comparison (M/M/1)
-                st.subheader("📐 M/M/1 Theoretical Comparison")
+                st.subheader("M/M/1 Theoretical Comparison")
                 st.markdown("""
                 This compares your observed data to the **theoretical M/M/1 model**
                 (assuming Poisson arrivals and exponential service times)
@@ -751,7 +755,7 @@ def stochastic_queueing_page():
                 st.dataframe(comparison)
                 
                 # Visualizations
-                st.subheader("📈 Visualizations")
+                st.subheader("Visualizations")
                 
                 tab1, tab2, tab3 = st.tabs(["Timeline", "Distributions", "Data Table"])
                 
@@ -817,7 +821,7 @@ def stochastic_queueing_page():
     # ========================================
     # MODE 2: SIMULATE QUEUES
     # ========================================
-    elif mode == "🎲 Simulate Queue Systems":
+    elif mode == "Simulate Queue Systems":
         st.header("Queue System Simulation & Comparison")
         st.markdown("""
         This tool uses **Monte Carlo simulation** to model M/M/c queueing systems.
@@ -839,18 +843,31 @@ def stochastic_queueing_page():
         st.sidebar.markdown("---")
         st.sidebar.metric("M/M/1 Utilization", f"{rho_1:.3f}")
         if rho_1 >= 1:
-            st.sidebar.error("⚠️ Single server is UNSTABLE")
+            st.sidebar.error("Single server is UNSTABLE")
         else:
-            st.sidebar.success("✅ Single server is stable")
+            st.sidebar.success("Single server is stable")
         
         # Run comparison
-        if st.button("🚀 Run Simulation & Comparison"):
-            with st.spinner("Simulating queue systems..."):
-                comparison_df = compare_queue_designs(
-                    lambda_rate, mu_rate, max_servers, n_customers, seed
-                )
+        if st.button("Run Simulation & Comparison"):
+            # This button press triggers the main (and slow) calculation.
+            # Because the function is cached, this is fast after the first run.
+            comparison_df = compare_queue_designs(
+                lambda_rate, mu_rate, max_servers, n_customers, seed
+            )
             
-            st.subheader("📊 Performance Comparison")
+            # Store the cached results in session state to persist them
+            # across other widget interactions (like the selectbox)
+            st.session_state.comparison_df = comparison_df
+        
+        
+        # Only show the results area if the simulation has been run and
+        # the results are in session state.
+        if 'comparison_df' in st.session_state:
+            
+            # Retrieve the results
+            comparison_df = st.session_state.comparison_df
+
+            st.subheader("Performance Comparison")
             st.markdown(f"""
             This table compares the simulated performance for systems with
             1 server up to {max_servers} servers.
@@ -875,11 +892,11 @@ def stochastic_queueing_page():
             st.plotly_chart(fig_comparison, use_container_width=True)
             
             # Recommendation
-            st.subheader("💡 Recommendation")
+            st.subheader("Recommendation")
             stable_configs = comparison_df[comparison_df['stable']]
             
             if len(stable_configs) == 0:
-                st.error("❌ No stable configuration found. Increase service rate or reduce arrival rate.")
+                st.error("No stable configuration found. Increase service rate or reduce arrival rate.")
             else:
                 # Find best config (minimize wait time among stable)
                 best = stable_configs.loc[stable_configs['Wq_simulated'].idxmin()]
@@ -900,21 +917,27 @@ def stochastic_queueing_page():
             
             # Download results
             st.download_button(
-                "📥 Download Comparison Data",
+                "Download Comparison Data",
                 data=comparison_df.to_csv(index=False),
                 file_name="queue_comparison_results.csv",
                 mime="text/csv"
             )
             
             # Detailed single simulation
-            st.subheader("🔍 Detailed Simulation (Select Configuration)")
+            st.subheader("Detailed Simulation (Select Configuration)")
             st.markdown("Select one of the configurations above to see its detailed simulation.")
+            
+            # This selectbox changing *used* to trigger a re-run.
+            # Now, it just re-runs this small block of code.
             selected_servers = st.selectbox(
                 "Number of Servers",
                 comparison_df['servers'].tolist(),
                 index=0
             )
             
+            # This `simulate_queue` function is ALSO cached.
+            # It was already run inside the `compare_queue_designs` function,
+            # so Streamlit finds the result in cache and returns it instantly.
             sim_results = simulate_queue(lambda_rate, mu_rate, 
                                         n_servers=int(selected_servers), 
                                         n_customers=n_customers, 
@@ -961,7 +984,7 @@ def stochastic_queueing_page():
     # ========================================
     # MODE 3: MARKOV CHAINS
     # ========================================
-    elif mode == "🔗 Markov Chain Analysis":
+    elif mode == "Markov Chain Analysis":
         st.header("Discrete-Time Markov Chain Analysis")
         
         st.markdown("""
@@ -981,7 +1004,7 @@ def stochastic_queueing_page():
         Enter the transition probabilities. `P(i, j)` is the probability of
         moving **FROM state i TO state j**.
         
-        **⚠️ IMPORTANT: Each row MUST sum to 1.0.**
+        **IMPORTANT: Each row MUST sum to 1.0.**
         """)
         
         P = np.zeros((n_states, n_states))
@@ -993,7 +1016,7 @@ def stochastic_queueing_page():
             for j in range(n_states):
                 with row_cols[j]:
                     P[i, j] = st.number_input(
-                        f"→ State {j}",
+                        f"To State {j}",
                         0.0, 1.0, 1.0/n_states,
                         0.01,
                         key=f"P_{i}_{j}",
@@ -1030,22 +1053,30 @@ def stochastic_queueing_page():
             initial_state = None
         
         # Analyze button
-        if st.button("🔍 Analyze Markov Chain"):
+        if st.button("Analyze Markov Chain"):
             # Validate matrix
             row_sums = P.sum(axis=1)
             if not np.allclose(row_sums, 1.0):
-                st.error(f"⚠️ Invalid transition matrix. Row sums: {row_sums}")
+                st.error("Invalid transition matrix. Row sums: {row_sums}")
                 st.warning("Each row must sum to 1.0")
                 return
             
             with st.spinner("Analyzing Markov chain..."):
+                # The cached function is called here
                 result = analyze_markov_chain(P, n_steps, initial_state)
             
             if result is None:
                 return
             
+            # Store result in session state to persist it
+            st.session_state.markov_result = result
+        
+        # Display results if they exist in session state
+        if 'markov_result' in st.session_state:
+            result = st.session_state.markov_result
+            
             # Display results
-            st.subheader("📊 Results")
+            st.subheader("Results")
             
             # Transition matrix
             st.markdown("**Transition Matrix P:**")
@@ -1071,7 +1102,7 @@ def stochastic_queueing_page():
             st.dataframe(steady_df.style.format({'Probability': '{:.4f}'}))
             
             # Visualization
-            st.subheader("📈 State Probability Evolution")
+            st.subheader("State Probability Evolution")
             st.markdown("""
             This chart shows the probability of being in each state at each
             time step, starting from your initial condition. You can see the
@@ -1081,7 +1112,7 @@ def stochastic_queueing_page():
             st.plotly_chart(fig_evolution, use_container_width=True)
             
             # State diagram
-            st.subheader("🔄 Transition Diagram")
+            st.subheader("Transition Diagram")
             st.markdown("**Transition Matrix Heatmap:**")
             
             fig_heatmap = go.Figure(data=go.Heatmap(
@@ -1103,7 +1134,7 @@ def stochastic_queueing_page():
             st.plotly_chart(fig_heatmap, use_container_width=True)
             
             # Time evolution table
-            st.subheader("📋 Probability Distribution Over Time")
+            st.subheader("Probability Distribution Over Time")
             distributions_df = pd.DataFrame(
                 result['distributions'],
                 columns=[f"State {i}" for i in range(n_states)]
@@ -1114,27 +1145,27 @@ def stochastic_queueing_page():
             }))
             
             st.download_button(
-                "📥 Download Evolution Data",
+                "Download Evolution Data",
                 data=distributions_df.to_csv(index=False),
                 file_name="markov_evolution.csv",
                 mime="text/csv"
             )
             
             # Analysis insights
-            st.subheader("💡 Analysis Insights")
+            st.subheader("Analysis Insights")
             
             # Check if chain is absorbing
             has_absorbing = np.any(np.diag(P) == 1.0)
             if has_absorbing:
                 absorbing_states = [i for i in range(n_states) if P[i, i] == 1.0]
-                st.info(f"🔒 This chain has absorbing state(s): {absorbing_states}")
+                st.info(f"This chain has absorbing state(s): {absorbing_states}")
             
             # Check if chain is regular (eventually all entries positive)
             is_regular = np.all(result['distributions'][-1] > 0)
             if is_regular:
-                st.success("✅ This is a regular Markov chain (converges to steady state)")
+                st.success("This is a regular Markov chain (converges to steady state)")
             else:
-                st.warning("⚠️ This chain may not be regular (some states unreachable)")
+                st.warning("This chain may not be regular (some states unreachable)")
             
             # Expected return time
             st.markdown(r"""
@@ -1160,7 +1191,7 @@ def stochastic_queueing_page():
 
 def economic_analysis_page():
     """Cost-benefit analysis for queue designs"""
-    st.header("💰 Economic Analysis of Queue Systems")
+    st.header("Economic Analysis of Queue Systems")
     st.markdown("By **Leonardo H. Talero-Sarmiento**")
     
     st.markdown(r"""
@@ -1209,7 +1240,7 @@ def economic_analysis_page():
     is incurred only while waiting or for their entire visit.)*
     """.format(max_servers=max_servers))
     
-    if st.button("💵 Calculate Optimal Configuration"):
+    if st.button("Calculate Optimal Configuration"):
         results = []
         
         for c in range(1, max_servers + 1):
@@ -1256,6 +1287,13 @@ def economic_analysis_page():
         
         results_df = pd.DataFrame(results)
         
+        # Store in session state
+        st.session_state.economic_results_df = results_df
+
+    # Display results if they exist in session state
+    if 'economic_results_df' in st.session_state:
+        results_df = st.session_state.economic_results_df
+        
         # Find optimal (ignoring unstable inf costs)
         stable_results = results_df[results_df['total_cost_daily'] != np.inf]
         
@@ -1267,7 +1305,7 @@ def economic_analysis_page():
         optimal_idx = stable_results['total_cost_daily'].idxmin()
         optimal = stable_results.loc[optimal_idx]
         
-        st.subheader("📊 Cost Analysis Results")
+        st.subheader("Cost Analysis Results")
         st.dataframe(results_df.style.format({
             'rho': '{:.3f}',
             'Wq': '{:.3f}',
@@ -1289,7 +1327,7 @@ def economic_analysis_page():
         """)
         
         # Visualization
-        st.subheader("📈 Cost-Benefit Trade-off")
+        st.subheader("Cost-Benefit Trade-off")
         fig = make_subplots(
             rows=1, cols=2,
             subplot_titles=('Cost Breakdown', 'Total Cost Curve')
@@ -1337,7 +1375,7 @@ def economic_analysis_page():
         st.plotly_chart(fig, use_container_width=True)
         
         st.download_button(
-            "📥 Download Economic Analysis",
+            "Download Economic Analysis",
             data=results_df.to_csv(index=False),
             file_name="queue_economic_analysis.csv",
             mime="text/csv"
@@ -1353,7 +1391,7 @@ def add_to_navigation():
     Add these pages to your existing PAGES dictionary in the main DOE app:
     
     PAGES = {
-        "📘 Guide & Glossary": guide_and_glossary_page,
+        "Guide & Glossary": guide_and_glossary_page,
         "Stochastic Processes & Queueing": stochastic_queueing_page,
         "Economic Analysis (Queues)": economic_analysis_page,
         ... other pages ...
@@ -1371,7 +1409,7 @@ if __name__ == "__main__":
     
     # Add the new guide page to the dictionary
     PAGES = {
-        "📘 Guide & Glossary": guide_and_glossary_page,
+        "Guide & Glossary": guide_and_glossary_page,
         "Queueing Analysis": stochastic_queueing_page,
         "Economic Analysis": economic_analysis_page,
     }
