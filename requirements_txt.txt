@@ -59,7 +59,8 @@ plotly>=5.14.0,<6.0.0
 # =========================
 
 # 1. Create virtual environment:
-#    python -m venv venv
+#  
+#   python -m venv venv
 #
 # 2. Activate virtual environment:
 #    Windows: venv\Scripts\activate

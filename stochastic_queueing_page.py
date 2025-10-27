@@ -564,7 +564,7 @@ def stochastic_queueing_page():
                     with col2:
                         fig_service = go.Figure()
                         fig_service.add_trace(go.Histogram(
-                            x=df_analyzed['service_time'],
+                            x=df_analyZED['service_time'],
                             nbinsx=20,
                             name='Service Time'
                         ))
